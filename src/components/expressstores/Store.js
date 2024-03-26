@@ -120,7 +120,10 @@ const Store = ({ store, ratestore, idxloading }) => {
         </Card.Body>
         <Card.Footer>
           <Button
-            onClick={handleShow}
+            onClick={() =>
+              {handleShow();
+              getStoreProducts();
+            }}
             disabled={idxloading}
             className="btn btn-primary border-info rounded-pill px-3"
           >

@@ -48,7 +48,6 @@ const UsersStore = ({ accountId, getstores }) => {
       setLoading(true);
       // calling the contract
       const _storeproducts = await _getStoreProducts(accountId)
-      console.log(_storeproducts)
       setStoreProducts(_storeproducts == null ? [] : _storeproducts);
     } catch (error) {
       console.log(error);
