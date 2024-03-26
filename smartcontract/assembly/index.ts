@@ -13,9 +13,11 @@ export function addSuggestedProduct(product: SuggestedProduct): void {
         allSuggestedProducts.set("all", new Array());
     }
     let _all = allSuggestedProducts.getSome("all");
-    let _date = new Date(_all[0].lifeSpan/1000000)
-    assertValidity(!(_all.length == 6 && _all[0].lifeSpan > context.blockTimestamp),
-     `we are out of spots for suggested products, a spot will be available by ${_date.toDateString()} ${_date.toTimeString()} GMT`)
+    if (_all.length == 6){
+        let _date = new Date(_all[0].lifeSpan/1000000)
+        assertValidity(!(_all[0].lifeSpan > context.blockTimestamp),
+        `we are out of spots for suggested products, a spot will be available by ${_date.toDateString()} ${_date.toTimeString()} GMT`)
+    }
     if (_all.length == 6 && _all[0].lifeSpan < context.blockTimestamp){
         SuggestedProduct.deleteProduct(_all, 0);
     }

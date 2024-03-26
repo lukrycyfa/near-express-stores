@@ -1,4 +1,4 @@
-const CONTRACT_NAME = process.env.REACT_APP_CONTRACT_NAME  // "contract.express-stores.testnet" //process.env.CONTRACT_NAME; // line 1
+const CONTRACT_NAME = process.env.REACT_APP_CONTRACT_NAME;
 
 
 function environment(env) {

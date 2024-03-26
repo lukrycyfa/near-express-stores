@@ -37,28 +37,27 @@ export async function getSuggestedProducts() {
 // add  a suggested product
 export async function addSuggestedProduct(product) {
     product.id = uuid4();
-    console.log(product)
     // call the contract function
-    return window.contract.addSuggestedProduct({product});
+    return window.contract.addSuggestedProduct({product}, GAS);
 }
 
 // add a store
 export async function addStore(store) {
     store.id = uuid4();
     // call the contract function
-    return window.contract.addStore({store}); 
+    return window.contract.addStore({store}, GAS); 
 }
 
 // update a store
 export async function updateStore(store) {
     // call the contract function
-    return window.contract.updateStore({store});
+    return window.contract.updateStore({store}, GAS);
 }
 
 // delete a store 
 export async function deleteStore() {
     // call the contract function
-    return window.contract.deleteStore();
+    return window.contract.deleteStore(GAS);
 }
 
 // add a product to a store
@@ -66,32 +65,32 @@ export async function addStoreProduct(product) {
     product.id = uuid4();
     product.price = parseNearAmount(product.price + "");
     // call the contract function
-    return window.contract.addStoreProduct({product});
+    return window.contract.addStoreProduct({product}, GAS);
 }
 
 // update a product in a store
 export async function updateStoreProduct(productId, product) {
     product.price = parseNearAmount(product.price + "");
     // call the contract function
-    return window.contract.updateStoreProduct({productId, product});
+    return window.contract.updateStoreProduct({productId, product}, GAS);
 }
 
 // avail products in a store
 export async function availStoreProduct(productId, amount) {
     // call the contract function
-    return window.contract.availStoreProduct({productId, amount});
+    return window.contract.availStoreProduct({productId, amount}, GAS);
 }
 
 // rate a store
 export async function rateStore(storeId, rating) {
     // call the contract function
-    return window.contract.rateStore({storeId, rating});
+    return window.contract.rateStore({storeId, rating}, GAS);
 }
 
 // delete a product in a store
 export async function deleteStoreProduct(productId) {
     // call the contract function
-    return window.contract.deleteStoreProduct({productId});
+    return window.contract.deleteStoreProduct({productId}, GAS);
 }
 
 // buy a product from a store
@@ -103,5 +102,5 @@ export async function buyProduct(storeId, productId, price) {
 // delete a purchased refrences
 export async function deletePurchasedReference(idx) {
     // call the contract function
-    return window.contract.deletePurchaseRefrence({idx});
+    return window.contract.deletePurchaseRefrence({idx}, GAS);
 }  
