@@ -30,7 +30,7 @@ const Store = ({ store, ratestore, idxloading }) => {
       setLoading(true);
       // calling the contract
       const storeproducts = await _getStoreProducts(id)
-      setStoreProducts(storeproducts == null ? [] : _storeproducts);
+      setStoreProducts(storeproducts == null ? [] : storeproducts);
     } catch (error) {
       console.log(error);
     } finally {
