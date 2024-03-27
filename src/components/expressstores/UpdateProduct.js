@@ -128,6 +128,7 @@ const UpadateProduct = ({ loading, updateproduct, addproduct, product }) => {
             onClick={() => {
               addproduct(id, _addproduct);
               handleClose();
+              setAddProduct(0);
             }}
             variant="dark"
           >
