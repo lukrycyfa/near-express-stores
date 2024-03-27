@@ -5,53 +5,84 @@ import { ContractPromiseBatch, context } from 'near-sdk-as';
 
 // A function called to create a SuggestedProduct. with the max number of `SuggestedProduct == 6`
 export function addSuggestedProduct(product: SuggestedProduct): void {
-    // assert the product payload, create a instance for `allSuggestedProducts` if  non exits,
-    // assert the max number of SuggestedProduct and the oldest `SuggestedProduct lifeSpan`
-    // before adding a new suggested product and updating allSuggestedProducts.
-    assertValidity(product.name.length > 0 && product.description.length > 0 && product.image.length > 0, "invalid payload")
-    if(allSuggestedProducts.get("all") === null){
-        allSuggestedProducts.set("all", new Array());
+    assertValidity(product.name.length > 0 && product.description.length > 0 && product.image.length > 0, "Invalid payload");
+    
+    // Check if suggested product already exists
+    const suggestedProducts = allSuggestedProducts.get('all');
+    if (suggestedProducts) {
+        for (let i = 0; i < suggestedProducts.length; i++) {
+            if (suggestedProducts[i].name === product.name) {
+                throw new Error("Suggested product already exists");
+            }
+        }
     }
-    let _all = allSuggestedProducts.getSome("all");
-    if (_all.length == 6){
-        let _date = new Date(_all[0].lifeSpan/1000000)
-        assertValidity(!(_all[0].lifeSpan > context.blockTimestamp),
-        `we are out of spots for suggested products, a spot will be available by ${_date.toDateString()} ${_date.toTimeString()} GMT`)
+    
+    // Check maximum number of suggested products
+    if (suggestedProducts && suggestedProducts.length >= 6) {
+        throw new Error("Maximum number of suggested products reached");
     }
-    if (_all.length == 6 && _all[0].lifeSpan < context.blockTimestamp){
-        SuggestedProduct.deleteProduct(_all, 0);
-    }
-    _all.push(SuggestedProduct.suggestedProductFromPayload(product));
-    allSuggestedProducts.set("all", _all);
+
+    // Add the suggested product
+    const suggestedProduct = SuggestedProduct.suggestedProductFromPayload(product);
+    allSuggestedProducts.push(suggestedProduct);
 }
+
 
 // A function called to create a Store.
 export function addStore(store: Store): void {
-    // assert the `context.sender`, store payload, create a store and update allStores
-    assertValidity(allStores.get(context.sender) === null, "A store with this User already exists")
     assertValidity(store.name.length > 0 && store.description.length > 0 && store.banner.length > 0 &&
-    store.location.length > 0, "invalid payload")
+        store.location.length > 0, "Invalid payload");
+    
+    // Check if store already exists
+    if (allStores.contains(context.sender)) {
+        throw new Error("A store with this User already exists");
+    }
+
+    // Create and add the store
     store.id = context.sender;
     allStores.set(context.sender, Store.storeFromPayload(store));
 }
 
+
 // A function called to update a Store.
 export function updateStore(store: Store): void {
-    // assert the `context.sender`, store payload, update the store and update allStores
-    assertValidity(allStores.get(context.sender) !== null, `a store with ${context.sender} does not exists`)
-    const _updateStore = allStores.getSome(context.sender);
     assertValidity(store.name.length > 0 && store.description.length > 0 && store.banner.length > 0 &&
-    store.location.length > 0, "Invalid Payload")
-    _updateStore.updateStoreFromPayload(store);
-    allStores.set(_updateStore.id, _updateStore);
+        store.location.length > 0, "Invalid payload");
+
+    // Check if store exists
+    const existingStore = allStores.get(context.sender);
+    if (!existingStore) {
+        throw new Error(`A store with ${context.sender} does not exist`);
+    }
+
+    // Check access control
+    if (existingStore.owner !== context.sender) {
+        throw new Error("Unauthorized to update this store");
+    }
+
+    // Update the store
+    existingStore.updateStoreFromPayload(store);
+    allStores.set(existingStore.id, existingStore);
 }
+
 
 // A function called to delete a Store.
 export function deleteStore(): void {
-    assertValidity(allStores.get(context.sender) !== null, `a store with ${context.sender} does not exists`)
-    // assert the `context.sender`, delete a Store.
+    // Check if store exists
+    const existingStore = allStores.get(context.sender);
+    if (!existingStore) {
+        throw new Error(`A store with ${context.sender} does not exist`);
+    }
+
+    // Check access control
+    if (existingStore.owner !== context.sender) {
+        throw new Error("Unauthorized to delete this store");
+    }
+
+    // Delete the store
     allStores.delete(context.sender);
 }
+
 
 // A function called to add a Store Product.
 export function addStoreProduct(product: Product): void {
@@ -65,48 +96,103 @@ export function addStoreProduct(product: Product): void {
 
 // A function called to update a Store Product.
 export function updateStoreProduct(productId: string, product: Product): void {
-    // assert the `context.sender`, product payload, productId, update a product in store and update allStores
-    assertValidity(allStores.get(context.sender) !== null, `a store with ${context.sender} does not exists`)
-    const _updateStore = allStores.getSome(context.sender); 
-    assertValidity(product.name.length > 0 && product.description.length > 0 && product.image.length > 0 && !product.price.isZero(), "Invalid Payload")
-    const _productIdx = findEntryProduct(_updateStore.storeProducts, productId);
-    assertValidity(!(_productIdx < 0), `a product with ${productId} does not exists on this store`);
-    _updateStore.updateStoreProduct(_updateStore.storeProducts[_productIdx], product);
-    allStores.set(_updateStore.id, _updateStore);
+    assertValidity(product.name.length > 0 && product.description.length > 0 && product.image.length > 0 && !product.price.isZero(), "Invalid payload");
+    
+    // Check if store exists
+    const existingStore = allStores.get(context.sender);
+    if (!existingStore) {
+        throw new Error(`A store with ${context.sender} does not exist`);
+    }
+
+    // Check if product exists in store
+    const productIndex = findEntryProduct(existingStore.storeProducts, productId);
+    if (productIndex < 0) {
+        throw new Error(`Product with ID ${productId} does not exist in this store`);
+    }
+
+    // Check access control
+    if (existingStore.storeProducts[productIndex].owner !== context.sender) {
+        throw new Error("Unauthorized to update this product");
+    }
+
+    // Update the product
+    existingStore.updateStoreProduct(existingStore.storeProducts[productIndex], product);
+    allStores.set(existingStore.id, existingStore);
 }
+
 
 // A function called to avail Products in a store.
 export function availStoreProduct(productId: string, amount: u32): void {
-    // assert the `context.sender`, product amount, productId, avail the products to store and update allStores
-    assertValidity(allStores.get(context.sender) !== null, `a store with ${context.sender} does not exists`)
-    const _updateStore = allStores.getSome(context.sender); 
-    assertValidity(amount > 0, "Invalid Payload")
-    const _productIdx = findEntryProduct(_updateStore.storeProducts, productId)
-    assertValidity(!(_productIdx < 0), `a product with ${productId} does not exists on this store`)
-    _updateStore.storeProducts[_productIdx].incrementAvailable(amount);
-    allStores.set(_updateStore.id, _updateStore);
+    // Check if store exists
+    const existingStore = allStores.get(context.sender);
+    if (!existingStore) {
+        throw new Error(`A store with ${context.sender} does not exist`);
+    }
+
+    // Check if product exists in store
+    const productIndex = findEntryProduct(existingStore.storeProducts, productId);
+    if (productIndex < 0) {
+        throw new Error(`Product with ID ${productId} does not exist in this store`);
+    }
+
+    // Check access control
+    if (existingStore.storeProducts[productIndex].owner !== context.sender) {
+        throw new Error("Unauthorized to update availability of this product");
+    }
+
+    // Update product availability
+    existingStore.storeProducts[productIndex].incrementAvailable(amount);
+    allStores.set(existingStore.id, existingStore);
 }
+
 
 // A function called to rate a store.
 export function rateStore(storeId: string, rating: u32): void {
-    // assert the `storeId`, context.sender, rating, rate the store and update allStores
-    assertValidity(allStores.get(storeId) !== null, `a store with ${storeId} does not exists`); 
-    const _updateStore = allStores.getSome(storeId);
-    assertValidity(_updateStore.owner != context.sender, `store owner is unauthorized to rate own store`);
-    assertValidity(rating >= 0 && rating <= 5, `the provided rating is out of range`);
-    _updateStore.rateStore(rating);
-    allStores.set(_updateStore.id, _updateStore);
+    // Check if store exists
+    const existingStore = allStores.get(storeId);
+    if (!existingStore) {
+        throw new Error(`A store with ID ${storeId} does not exist`);
+    }
+
+    // Check access control
+    if (existingStore.owner === context.sender) {
+        throw new Error("Store owner is unauthorized to rate own store");
+    }
+
+    // Check rating range
+    if (rating < 0 || rating > 5) {
+        throw new Error("Rating should be between 0 and 5");
+    }
+
+    // Update store rating
+    existingStore.rateStore(rating);
+    allStores.set(existingStore.id, existingStore);
 }
 
+
 // A function called to delete Store Products.
+
 export function deleteStoreProduct(productId: string): void {
-    // assert the context.sender, productId, delete the store product and update allStores
-    assertValidity(allStores.get(context.sender) !== null, `a store with ${context.sender} does not exists`);
-    const _updateStore = allStores.getSome(context.sender);  
-    const _productIdx = findEntryProduct(_updateStore.storeProducts, productId);
-    assertValidity(!(_productIdx < 0) , `a product with ${productId} does not exists on this store`);
-    _updateStore.deleteProduct(_productIdx);
-    allStores.set(_updateStore.id, _updateStore);
+    // Check if store exists
+    const existingStore = allStores.get(context.sender);
+    if (!existingStore) {
+        throw new Error(`A store with ${context.sender} does not exist`);
+    }
+
+    // Check if product exists in store
+    const productIndex = findEntryProduct(existingStore.storeProducts, productId);
+    if (productIndex < 0) {
+        throw new Error(`Product with ID ${productId} does not exist in this store`);
+    }
+
+    // Check access control
+    if (existingStore.storeProducts[productIndex].owner !== context.sender) {
+        throw new Error("Unauthorized to delete this product");
+    }
+
+    // Delete the product
+    existingStore.deleteProduct(productIndex);
+    allStores.set(existingStore.id, existingStore);
 }
 
 // get all stores
