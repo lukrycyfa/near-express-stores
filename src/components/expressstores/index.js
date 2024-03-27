@@ -24,6 +24,7 @@ const Stores = () => {
   const [stores, setStores] = useState([]);
   const [suggestedproduct, setSuggestedProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [lstIdx, setLastIdx] = useState(null);
 
   // get all stores
   const getStores = useCallback(async () => {
@@ -46,6 +47,7 @@ const Stores = () => {
       // calling the contract
       let _products = await SuggestedProducts()
       setSuggestedProducts(_products == null ? [] : _products);
+      setLastIdx(_products.length == 6 ? _products[0]: null)
     } catch (error) {
       console.log(error);
     } finally {
@@ -167,8 +169,10 @@ const Stores = () => {
         <Card className="text-center rounded-2 border-info shadow-lg py-3" id="suggest" style={{ "backgroundColor": "#21212b" }}>
           <Card.Header className="text-white display-5">
             <Stack direction="horizontal" gap={2}>
-              <span>Suggested Products for Stores</span>
+              <span className="display-6">Suggested Products for Stores</span>
               <AddSuggestedProduct loading={loading} addproduct={addSuggestedProduct} />
+              <span className="display-6">{`${lstIdx !== null ? lstIdx.lifeSpan/1000000 > new Date().getTime() ? 
+              "available spot @"+ new Date(lstIdx.lifeSpan/1000000).toLocaleString() + "GMT": "available spot": "" }`}</span>
             </Stack>
           </Card.Header>
           <Card.Body className="overflow-x-hidden">
