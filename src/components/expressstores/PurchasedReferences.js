@@ -12,7 +12,7 @@ import { getPurchasedReferences, deletePurchasedReference } from "../../utils/ex
 const PurchasedReferences = ({ accountId }) => {
 
   // references and loading state variables
-  const [_references, setRefrences] = useState([]);
+  const [_references, setReferences] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // the modal state and state togglers
@@ -21,12 +21,12 @@ const PurchasedReferences = ({ accountId }) => {
   const handleShow = () => setShow(true);
 
   // get all stores
-  const getRefrences = async () => {
+  const getReferences = async () => {
     try {
       setLoading(true);
       // calling the contract
       const references = await getPurchasedReferences(accountId)
-      setRefrences(references == null ? [] : references);
+      setReferences(references == null ? [] : references);
     } catch (error) {
       console.log(error);
     } finally {
@@ -39,7 +39,7 @@ const PurchasedReferences = ({ accountId }) => {
     try {
       setLoading(true);
       // calling the contract
-      await deletePurchasedReference(idx).then((resp) => getRefrences());
+      await deletePurchasedReference(idx).then((resp) => getReferences());
       toast(<NotificationSuccess text="Reference Deleted successfully." />);
     } catch (error) {
       if (error.kind !== undefined) {
@@ -59,7 +59,7 @@ const PurchasedReferences = ({ accountId }) => {
         disabled={loading}
         onClick={() => {
           handleShow();
-          getRefrences();
+          getReferences();
         }}
         className="btn btn-primary border-info rounded-pill px-3"
       >
