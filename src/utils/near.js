@@ -20,7 +20,7 @@ const nearEnv = environment("testnet");
     window.contract = new Contract( window.walletConnection.account(),  
       nearEnv.contractName,
       {
-        viewMethods: ["getStores", "getStore" ,"getStoreProducts", "getPurchasedReferences", "getSuggestedProducts"],
+        viewMethods: ["getStores", "getStore" ,"getStoreProducts", "getPurchasedReference", "getSuggestedProducts"],
         changeMethods: ["addSuggestedProduct", "addStore", "updateStore", "deleteStore", "addStoreProduct", 
         "updateStoreProduct", "availStoreProduct", "rateStore", "deleteStoreProduct", "buyProduct", "deletePurchasedReferences"],
       }
