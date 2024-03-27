@@ -102,5 +102,5 @@ export async function buyProduct(storeId, productId, price) {
 // delete a purchased refrences
 export async function deletePurchasedReference(idx) {
     // call the contract function
-    return window.contract.deletePurchaseRefrence({idx}, GAS);
+    return window.contract.deletePurchasedReference({idx}, GAS);
 }  

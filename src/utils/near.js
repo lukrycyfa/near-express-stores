@@ -22,7 +22,7 @@ const nearEnv = environment("testnet");
       {
         viewMethods: ["getStores", "getStore" ,"getStoreProducts", "getPurchasedReference", "getSuggestedProducts"],
         changeMethods: ["addSuggestedProduct", "addStore", "updateStore", "deleteStore", "addStoreProduct", 
-        "updateStoreProduct", "availStoreProduct", "rateStore", "deleteStoreProduct", "buyProduct", "deletePurchasedReferences"],
+        "updateStoreProduct", "availStoreProduct", "rateStore", "deleteStoreProduct", "buyProduct", "deletePurchasedReference"],
       }
     );
   }
