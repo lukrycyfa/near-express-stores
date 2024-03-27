@@ -59,7 +59,6 @@ const Stores = () => {
       setLoading(true);
       // calling the contract
       await createStore(data).then((resp) => {
-        console.log(resp);
         getStores();
       });
       toast(<NotificationSuccess text="Store added successfully." />);
@@ -79,10 +78,8 @@ const Stores = () => {
   const addSuggestedProduct = async (data) => {
     try {
       setLoading(true);
-      console.log(data);
       // calling the contract
-      var _addproduct = await createSuggestedProduct(data);
-      console.log(_addproduct);
+      await createSuggestedProduct(data);
       getSuggestedProducts();
       toast(<NotificationSuccess text="Suggested Product added successfully." />);
     } catch (error) {
