@@ -25,7 +25,7 @@ export async function getStoreProducts(storeId) {
 // get Purchased references related to accountId
 export async function getPurchasedReferences(accountId) {
     // call the contract function
-    return window.contract.getPurchasedReferences({accountId});
+    return window.contract.getPurchasedReference({accountId});
 }
 
 // get suggested products

@@ -78,19 +78,19 @@ const Store = ({ store, ratestore, idxloading }) => {
             <i className="bi bi-geo-alt-fill"></i><span>{location}</span>
           </Card.Text>
           <Stack direction="horizontal" gap={2}>
-            <Button onClick={() => ratestore(id, 1)} variant="light" className="rounded-pill px-0 py-0" style={{ width: "35px" }}>
+            <Button disabled={idxloading} onClick={() => ratestore(id, 1)} variant="light" className="rounded-pill px-0 py-0" style={{ width: "35px" }}>
               <i className={`bi bi-star-fill ${rating > 0 ? 'text-warning' : ''}`}></i>
             </Button>
-            <Button onClick={() => ratestore(id, 2)} variant="light" className="rounded-pill px-0 py-0" style={{ width: "35px" }}>
+            <Button disabled={idxloading} onClick={() => ratestore(id, 2)} variant="light" className="rounded-pill px-0 py-0" style={{ width: "35px" }}>
               <i className={`bi bi-star-fill ${rating > 1 ? 'text-warning' : ''}`}></i>
             </Button>
-            <Button onClick={() => ratestore(id, 3)} variant="light" className="rounded-pill px-0 py-0" style={{ width: "35px" }}>
+            <Button disabled={idxloading} onClick={() => ratestore(id, 3)} variant="light" className="rounded-pill px-0 py-0" style={{ width: "35px" }}>
               <i className={`bi bi-star-fill ${rating > 2 ? 'text-warning' : ''}`}></i>
             </Button>
-            <Button onClick={() => ratestore(id, 4)} variant="light" className="rounded-pill px-0 py-0" style={{ width: "35px" }}>
+            <Button disabled={idxloading} onClick={() => ratestore(id, 4)} variant="light" className="rounded-pill px-0 py-0" style={{ width: "35px" }}>
               <i className={`bi bi-star-fill ${rating > 3 ? 'text-warning' : ''}`}></i>
             </Button>
-            <Button onClick={() => ratestore(id, 5)} variant="light" className="rounded-pill px-0 py-0" style={{ width: "35px" }}>
+            <Button disabled={idxloading} onClick={() => ratestore(id, 5)} variant="light" className="rounded-pill px-0 py-0" style={{ width: "35px" }}>
               <i className={`bi bi-star-fill ${rating > 4 ? 'text-warning' : ''}`}></i>
             </Button>
           </Stack>
