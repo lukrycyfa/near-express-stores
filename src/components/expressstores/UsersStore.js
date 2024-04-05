@@ -136,7 +136,10 @@ const UsersStore = ({ accountId, getstores }) => {
   const deleteStore = async () => {
     try {
       setLoading(true);
-      await _deleteStore().then((resp) => getStore());
+      await _deleteStore().then((resp) => {
+        getStore();
+        getStoreProducts();
+      });
       // calling the contract
       toast(<NotificationSuccess text="Store Deleted successfully." />);
     } catch (error) {

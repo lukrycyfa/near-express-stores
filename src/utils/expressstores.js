@@ -57,7 +57,7 @@ export async function updateStore(store) {
 // delete a store 
 export async function deleteStore() {
     // call the contract function
-    return window.contract.deleteStore(GAS);
+    return window.contract.deleteStore();
 }
 
 // add a product to a store
